@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Happy Birthday Amulu ❤️</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        /* --- 1. VARIABLES & RESET --- */
+        :root {
+            --rose: #E0115F;
+            --pink: #FFC0CB;
+            --gold: #D4AF37;
+            --gold-light: #F4E29F;
+            --midnight: #2E1A47;
+            --dark-purple: #1a0b2e;
+            --ivory: #FFF8F0;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --nav-height: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            /* Re-enabled cursor for mobile usability, custom cursor stays for desktop via media query */
+            cursor: auto; 
+        }
+
+        body {
+            background-color: var(--midnight);
+            background: radial-gradient(circle at center, var(--midnight) 0%, var(--dark-purple) 100%);
+            color: var(--ivory);
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            /* Fix for mobile browser bars */
+            height: 100dvh; 
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- 2. CUSTOM CURSOR (Desktop Only) --- */
+        @media (min-width: 992px) {
+            * { cursor: none; }
+            .cursor-dot, .cursor-outline { display: block; }
+        }
+        @media (max-width: 991px) {
+            .cursor-dot, .cursor-outline { display: none; }
+        }
+
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--gold); }
+        .cursor-outline { width: 40px; height: 40px; border: 1px solid var(--rose); transition: width 0.2s, height 0.2s; }
+        body:hover .cursor-outline { opacity: 1; }
+        .hover-target:hover ~ .cursor-outline { transform: scale(1.5); background: rgba(224, 17, 95, 0.1); }
+
+        /* --- 3. BACKGROUND ANIMATION --- */
+        .bg-particles {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-heart {
+            position: absolute;
+            color: var(--rose);
+            opacity: 0.3;
+            font-size: 1.5rem;
+            filter: blur(1px);
+        }
+
+        /* --- 4. LAYOUT & PAGES --- */
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        .page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            padding: 20px;
+            /* Important: Allow scrolling within pages on small screens */
+            padding-bottom: calc(var(--nav-height) + 20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center vertically by default */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease, visibility 0.6s;
+            text-align: center;
+            overflow-y: auto; /* Enable scroll if content overflows */
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Adjust alignment for scrollable pages to prevent cutting off top */
+        .page.scroll-mode {
+            justify-content: flex-start;
+            padding-top: 40px;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 5;
+        }
+
+        /* --- 5. TYPOGRAPHY (Responsive) --- */
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            /* Clamp scales font between 3rem and 6rem based on viewport width */
+            font-size: clamp(3.5rem, 10vw, 6rem); 
+            background: linear-gradient(to right, var(--pink), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            margin-bottom: 10px;
+            line-height: 1.2;
+            padding: 0 10px;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--rose);
+            padding-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            line-height: 1.6;
+            max-width: 600px;
+            color: var(--ivory);
+            padding: 0 15px;
+        }
+
+        /* --- 6. NAVIGATION (Floating Dock) --- */
+        .nav-dock {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            height: 70px;
+            background: rgba(46, 26, 71, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--pink);
+            font-size: 1.2rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item .label {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0px; /* Hidden visually but keeps logic */
+        }
+
+        /* --- 7. HOME PAGE --- */
+        .hero-heart-container {
+            perspective: 1000px;
+            margin-bottom: 20px;
+            margin-top: -50px; /* Lift slightly visually */
+        }
+        .hero-heart {
+            font-size: clamp(6rem, 20vw, 10rem);
+            color: var(--rose);
+            filter: drop-shadow(0 0 30px var(--rose));
+            animation: heartbeat 2s infinite ease-in-out;
+            cursor: pointer;
+        }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 50px var(--rose)); }
+        }
+
+        /* --- 8. MEMORY SLIDER (Responsive) --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px; /* Cap width for desktop */
+            aspect-ratio: 4/5; /* Portrait friendly ratio */
+            max-height: 65vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            margin: 0 auto;
+        }
+
+        .slide {
+            position: absolute;
+            width: 95%; /* Show slightly smaller than container */
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--gold);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            background: #000;
+            opacity: 0; 
+            visibility: hidden;
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .slide.active { opacity: 1; visibility: visible; z-index: 2; }
+
+        .slide img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        .slide-caption {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 30px 20px 20px; /* More top padding for gradient */
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Slider Controls - Better for Touch */
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--gold);
+            color: var(--ivory);
+            width: 44px; /* Touch friendly size */
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            z-index: 10;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .prev-btn { left: 5px; }
+        .next-btn { right: 5px; }
+
+        .swipe-instruction {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--pink);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- 9. SONG PAGE --- */
+        .music-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 90%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .vinyl {
+            width: 180px; height: 180px; /* Slightly smaller for mobile safety */
+            background: radial-gradient(circle, #111 20%, #333 21%, #111 22%, #111 100%);
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            animation: spin 8s linear infinite;
+            animation-play-state: paused;
+        }
+        .vinyl.playing { animation-play-state: running; }
+        .vinyl-center { width: 60px; height: 60px; background: var(--rose); border-radius: 50%; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .play-btn {
+            background: var(--gold);
+            color: var(--midnight);
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.8rem;
+            margin-top: 15px;
+            transition: 0.2s;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            padding-left: 5px; /* Visual center fix for play icon */
+        }
+        .play-btn.paused { padding-left: 0; }
+
+        /* --- 10. VIDEO PAGE (Responsive Fix) --- */
+        .video-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .video-frame {
+            /* Mobile First Sizing */
+            width: 90%; 
+            max-width: 350px; 
+            aspect-ratio: 9/16;
+            height: auto;
+            max-height: 70vh;
+            border: 2px solid var(--gold);
+            padding: 5px;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+            background: var(--midnight);
+            position: relative;
+        }
+        .video-frame video {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* --- 11. MESSAGE PAGE --- */
+        .letter-paper {
+            background: var(--ivory);
+            color: var(--midnight);
+            width: 90%; max-width: 500px;
+            padding: 30px 25px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+            min-height: 300px;
+            margin-bottom: 20px;
+        }
+        .letter-paper:hover { transform: rotate(0deg) scale(1.01); }
+        
+        .typewriter-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.6rem;
+            line-height: 1.4;
+            text-align: left;
+            color: #333;
+        }
+        
+        .secret-btn {
+            margin-top: 25px;
+            background: transparent;
+            border: 2px solid var(--rose);
+            color: var(--rose);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Montserrat';
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .secret-btn:hover, .secret-btn:active { background: var(--rose); color: var(--ivory); }
+
+        .hidden-message {
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--rose);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+        .hidden-message.revealed { opacity: 1; transform: translateY(0); }
+
+        /* --- 12. EXPLOSION PARTICLES --- */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 9999;
+        }
+
+        /* Footer */
+        .footer-sig {
+            position: fixed;
+            bottom: 95px; /* Above nav dock */
+            width: 100%;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* --- MEDIA QUERIES FOR SPECIFIC ADJUSTMENTS --- */
+        
+        /* Landscape Mode on Mobile */
+        @media (max-height: 600px) {
+            .nav-dock { bottom: 10px; height: 50px; }
+            .nav-item { width: 40px; height: 40px; }
+            .page { padding-top: 10px; }
+            .hero-heart { font-size: 4rem; margin-top: 0; }
+            h1 { font-size: 2.5rem; }
+            .slider-container { height: 70vh; aspect-ratio: auto; width: 50%; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+
+    <div class="bg-particles" id="bg-container"></div>
+    
+    <audio id="bg-music" loop>
+        <source src="src/audio/Muzumathi-MassTamilan.dev.mp3" type="audio/mp3">
+    </audio>
+
+    <div id="app">
+
+        <div id="home" class="page active">
+            <div class="hero-heart-container">
+                <div class="hero-heart"><i class="fas fa-heart"></i></div>
+            </div>
+            <h1>Happy Birthday Amulu...</h1>
+            <p style="color: var(--gold-light); animation: float 3s ease-in-out infinite;">A way more cuter 😍 than anyone else in the world!<br>Everyday in my life✨</p>
+        </div>
+
+        <div id="memories" class="page">
+            <h2>Our Memories</h2>
+            
+            <div class="slider-container" id="memory-slider">
+                <div class="slide active">
+                    <img src="src/images/IMG_20250929_125043.jpg.jpeg" alt="Memory 1">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20250930_125757.jpg.jpeg" alt="Memory 2">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260112_090529.jpg.jpeg" alt="Memory 3">
+       
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20251213_113901.jpg.jpeg" alt="Memory 4">
+                   
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20251213_113906.jpg.jpeg" alt="Memory 2">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260113_110248.jpg.jpeg" alt="Memory 3">
+    
+                </div>
+                 <div class="slide">
+                    <img src="src/images/IMG_20260113_110216.jpg.jpeg" alt="Memory 2">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260122_112418.jpg.jpeg" alt="Memory 4">
+                </div>
+                 <div class="slide">
+                    <img src="src/images/IMG_20260122_112440.jpg.jpeg" alt="Memory 2">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260122_113702.jpg.jpeg" alt="Memory 3">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260122_114123.jpg.jpeg" alt="Memory 4">
+                </div>
+                 <div class="slide">
+                    <img src="src/images/IMG_20260122_114515.jpg.jpeg" alt="Memory 2">
+                </div>
+                <div class="slide">
+                    <img src="src/images/IMG_20260122_121227.jpg.jpeg" alt="Memory 3">
+                </div>
+
+                <div class="slider-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></div>
+                <div class="slider-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></div>
+            </div>
+            
+            <div class="swipe-instruction">
+                <i class="fas fa-hand-pointer"></i> Swipe or Tap Arrows
+            </div>
+        </div>
+
+        <div id="song" class="page">
+            <h2>Our Song</h2>
+            <div class="music-card" id="music-card">
+                <div class="vinyl">
+                    <div class="vinyl-center"></div>
+                </div>
+                <h3 style="font-family:'Playfair Display'; color: var(--gold); margin-top: 10px;">Muzumathi</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 5px; opacity: 0.8;">AR Rahman, Srinivas</p>
+                
+                <button class="play-btn" onclick="toggleMusic()">
+                    <i class="fas fa-play" id="play-icon"></i>
+                </button>
+                <p style="font-size: 0.7rem; margin-top: 10px; opacity: 0.6;">(Tap to Play)</p>
+            </div>
+        </div>
+
+        <div id="video-page" class="page">
+            <h2>Cinematic Moment</h2>
+            <div class="video-container">
+                <div class="video-frame">
+                    <video controls playsinline poster="src/images/wp11296770.webp">
+                        <source src="src/video/VID-20260218-WA0065.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <div id="message" class="page scroll-mode">
+            <h2>My Wish For You</h2>
+            <div class="letter-paper">
+                <div class="typewriter-text" id="typewriter-area"></div>
+                <div style="text-align: center;">
+                    <button class="secret-btn" onclick="revealSecret()">Unlock Secret Message</button>
+                    <div class="hidden-message" id="secret-msg">
+                        "I love you more than all the stars in the sky. Forever yours. ❤️"
+                    </div>
+                </div>
+            </div>
+            <div style="height: 50px;"></div>
+        </div>
+
+    </div>
+
+    <div class="footer-sig">Made with Love ❤️</div>
+
+    <div class="nav-dock">
+        <div class="nav-item active" onclick="navigate('home')"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="navigate('memories')"><i class="fas fa-images"></i></div>
+        <div class="nav-item" onclick="navigate('song')"><i class="fas fa-music"></i></div>
+        <div class="nav-item" onclick="navigate('video-page')"><i class="fas fa-video"></i></div>
+        <div class="nav-item" onclick="navigate('message')"><i class="fas fa-envelope"></i></div>
+    </div>
+
+    <script>
+        // --- 1. CURSOR LOGIC (Desktop Only) ---
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorOutline = document.getElementById('cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            if(window.innerWidth < 992) return; // Disable JS calculation on mobile
+            const posX = e.clientX;
+            const posY = e.clientY;
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+            gsap.to(cursorOutline, { x: posX, y: posY, duration: 0.15, ease: "power2.out" });
+        });
+
+        // --- 2. NAVIGATION LOGIC ---
+        const pageOrder = ['home', 'memories', 'song', 'video-page', 'message'];
+        
+        function navigate(pageId) {
+            const pages = document.querySelectorAll('.page');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // 1. Fade out current
+            pages.forEach(page => {
+                if(page.classList.contains('active')) {
+                    gsap.to(page, {opacity: 0, scale: 0.95, duration: 0.4, onComplete: () => {
+                        page.classList.remove('active');
+                        // 2. Fade in new
+                        const newPage = document.getElementById(pageId);
+                        newPage.classList.add('active');
+                        gsap.fromTo(newPage, 
+                            {opacity: 0, scale: 1.05}, 
+                            {opacity: 1, scale: 1, duration: 0.5, ease: "power2.out"}
+                        );
+                    }});
+                }
+            });
+
+            // Update Nav Icons
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if(item.getAttribute('onclick').includes(pageId)) {
+                    item.classList.add('active');
+                }
+            });
+
+            if(pageId === 'message') startTypewriter();
+        }
+
+        // --- 3. SLIDER LOGIC ---
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function moveSlide(direction) {
+            const outgoingSlide = slides[currentSlideIndex];
+            
+            currentSlideIndex += direction;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+
+            const incomingSlide = slides[currentSlideIndex];
+            const slideOutX = direction > 0 ? '-100%' : '100%';
+            const slideInX = direction > 0 ? '100%' : '-100%';
+
+            gsap.to(outgoingSlide, { x: slideOutX, opacity: 0, scale: 0.9, duration: 0.5, onComplete: () => {
+                outgoingSlide.classList.remove('active');
+                outgoingSlide.style.visibility = 'hidden';
+            }});
+
+            incomingSlide.style.visibility = 'visible';
+            incomingSlide.classList.add('active');
+            gsap.fromTo(incomingSlide, 
+                { x: slideInX, opacity: 0, scale: 0.9 },
+                { x: '0%', opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }
+            );
+        }
+
+        // Slider Swipe
+        let touchStartX = 0;
+        const slider = document.getElementById('memory-slider');
+
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+
+        slider.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const deltaX = touchEndX - touchStartX;
+            if (Math.abs(deltaX) > 50) {
+                if (deltaX < 0) moveSlide(1); else moveSlide(-1);
+            }
+        }, { passive: true });
+
+        // --- 4. BACKGROUND PARTICLES ---
+        function createBgParticles() {
+            const container = document.getElementById('bg-container');
+            for(let i=0; i<15; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('bg-heart');
+                heart.innerHTML = '<i class="fas fa-heart"></i>';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+                container.appendChild(heart);
+                gsap.fromTo(heart, 
+                    {y: '100vh', rotation: 0},
+                    {y: '-10vh', rotation: 360, duration: Math.random()*10+10, delay: Math.random()*5, repeat: -1, ease: "linear"}
+                );
+            }
+        }
+        createBgParticles();
+
+        // --- 5. CLICK EXPLOSION ---
+        window.addEventListener('click', (e) => {
+            if(e.target.closest('button, .nav-item, video, .slider-btn')) return;
+            createExplosion(e.clientX, e.clientY);
+        });
+
+        function createExplosion(x, y) {
+            const colors = ['#E0115F', '#FFC0CB', '#D4AF37', '#FFF'];
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                document.body.appendChild(particle);
+                
+                const isHeart = Math.random() > 0.5;
+                if(isHeart) {
+                    particle.innerHTML = '<i class="fas fa-heart"></i>';
+                    particle.style.fontSize = Math.random() * 20 + 10 + 'px';
+                } else {
+                    particle.style.width = Math.random() * 8 + 4 + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                }
+                particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 100 + 50;
+                
+                gsap.to(particle, {
+                    x: Math.cos(angle) * velocity,
+                    y: Math.sin(angle) * velocity,
+                    opacity: 0, scale: 0, duration: Math.random() * 0.8 + 0.5,
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
+
+        // --- 6. MUSIC PLAYER ---
+        const audio = document.getElementById('bg-music');
+        const playIcon = document.getElementById('play-icon');
+        const playBtn = document.querySelector('.play-btn');
+        const vinyl = document.querySelector('.vinyl');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                playBtn.classList.add('paused');
+                playBtn.style.paddingLeft = "5px";
+                vinyl.classList.remove('playing');
+            } else {
+                audio.play().catch(e => console.log("Interaction needed first"));
+                playIcon.classList.remove('fa-play');
+                playIcon.classList.add('fa-pause');
+                playBtn.classList.remove('paused');
+                playBtn.style.paddingLeft = "0";
+                vinyl.classList.add('playing');
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // --- 7. TYPEWRITER ---
+        const messageText = "My dearest,\n\nOn this special day, I want you to know how incredibly much you mean to me. You are the light in my darkness and the song in my heart. \n\nHappy Birthday, my love.";
+        const typeWriterArea = document.getElementById('typewriter-area');
+        let hasTyped = false;
+
+        function startTypewriter() {
+            if(hasTyped) return;
+            hasTyped = true;
+            typeWriterArea.innerHTML = '';
+            let i = 0;
+            const speed = 40;
+            function type() {
+                if (i < messageText.length) {
+                    if(messageText.charAt(i) === '\n') typeWriterArea.innerHTML += '<br>';
+                    else typeWriterArea.innerHTML += messageText.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function revealSecret() {
+            document.getElementById('secret-msg').classList.add('revealed');
+            createExplosion(window.innerWidth/2, window.innerHeight/2);
+        }
+
+    </script>
+</body>
+</html>
